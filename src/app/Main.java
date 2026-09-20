@@ -1,6 +1,6 @@
 /*
-Compilar: javac -cp "lib/postgresql-42.7.12.jar" src/*.java
-Ejecutar: java -cp "lib/postgresql-42.7.12.jar:src" Main
+Compilar: javac -cp "lib/postgresql-42.7.12.jar" -d out $(find src -name "*.java")
+Ejecutar: java -cp "lib/postgresql-42.7.12.jar:out" app.Main
 */
 
 package app;

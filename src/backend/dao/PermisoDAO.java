@@ -1,5 +1,4 @@
 package backend.dao;
-
 import backend.config.Conexion;
 import backend.modelo.FuncionUsuario;
 import java.sql.Connection;
