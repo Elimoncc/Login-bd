@@ -1,3 +1,6 @@
+package backend.dao;
+import backend.config.Conexion;
+import backend.modelo.Usuario;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,7 +11,7 @@ public class UsuarioDAO {
 
         String sql = """
             SELECT id_usern, nombre, password, activo
-            FROM seguridad.usern
+            FROM usern
             WHERE nombre = ? AND password = ?
             """;
 

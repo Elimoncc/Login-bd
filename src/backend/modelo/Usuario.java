@@ -1,3 +1,4 @@
+package backend.modelo;
 public class Usuario {
 
     private int idUser;

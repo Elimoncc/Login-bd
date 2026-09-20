@@ -1,3 +1,6 @@
+package backend.dao;
+
+import backend.config.Conexion;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
@@ -5,7 +8,7 @@ public class SesionDAO {
 
     public boolean crearSesion(int idUser, int pid) {
         String sql = """
-            INSERT INTO seguridad.sesion
+            INSERT INTO sesion
             (id_userN, activo, pid)
             VALUES (?, TRUE, ?)
             """;
@@ -23,11 +26,10 @@ public class SesionDAO {
             return false;
         }
     }
-
-    // Antes cerraba TODAS las sesiones del usuario. Ahora cierra SOLO la sesión con ese pid.
+    
     public boolean cerrarSesion(int pid) {
         String sql = """
-            UPDATE seguridad.sesion
+            UPDATE sesion
             SET activo = FALSE
             WHERE pid = ? AND activo = TRUE;
             """;
