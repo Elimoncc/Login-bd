@@ -1,4 +1,3 @@
-package backend.config;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -8,9 +7,9 @@ import java.sql.Statement;
 public class Conexion {
 
     private static final String URL = "jdbc:postgresql://localhost:5433/postgres";
-    private static final String USUARIO = "_";
-    private static final String PASSWORD = "_";
-    private static final String ESQUEMA = "\"_\"";
+    private static final String USUARIO = "postgres";
+    private static final String PASSWORD = "0620&po";
+    private static final String ESQUEMA = "\"TBD deporte\"";
 
     public static Connection conectar() {
         try {

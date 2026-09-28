@@ -1,17 +1,15 @@
 package frontend;
 
-import backend.modelo.FuncionUsuario;
 import backend.servicio.GestorSesiones;
 import backend.servicio.ServicioLogin;
 import backend.servicio.ServicioPermisos;
+
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -27,10 +25,13 @@ public class VentanaPrincipal extends JFrame {
     private final ServicioLogin servicio = new ServicioLogin();
 
     public VentanaPrincipal(GestorSesiones.SesionInfo sesion) {
+
         super("Sistema Deportivo");
+
         this.sesion = sesion;
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -39,6 +40,7 @@ public class VentanaPrincipal extends JFrame {
         });
 
         setLayout(new BorderLayout(10, 10));
+
         add(crearEncabezado(), BorderLayout.NORTH);
         add(new JScrollPane(crearPanelFunciones()), BorderLayout.CENTER);
         add(crearPie(), BorderLayout.SOUTH);
@@ -48,64 +50,106 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private JPanel crearEncabezado() {
+
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panel.add(new JLabel("Bienvenido/a, " + sesion.nombreUsuario + "  (PID " + sesion.pid + ")"));
+
+        panel.add(new JLabel(
+            "Bienvenido/a, " + sesion.nombreUsuario +
+            "  (PID " + sesion.pid + ")"
+        ));
+
         return panel;
     }
 
     private JPanel crearPanelFunciones() {
-        List<FuncionUsuario> funciones = new ServicioPermisos().funcionesDe(sesion.idUser);
-        JPanel contenedor = new JPanel();
-        contenedor.setLayout(new BoxLayout(contenedor, BoxLayout.Y_AXIS));
-        contenedor.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
-        if (funciones.isEmpty()) {
-            contenedor.add(new JLabel("Este usuario no tiene roles ni funciones asignadas."));
+        List<Integer> ius =
+            new ServicioPermisos().listarIU(sesion.idUser);
+
+        JPanel contenedor = new JPanel();
+
+        contenedor.setLayout(new BoxLayout(contenedor, BoxLayout.Y_AXIS));
+
+        contenedor.setBorder(
+            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        );
+
+        if (ius.isEmpty()) {
+
+            contenedor.add(
+                new JLabel("Este usuario no tiene interfaces asignadas.")
+            );
+
             return contenedor;
         }
 
-        // Agrupa las funciones por rol, respetando el orden de la consulta
-        Map<String, JPanel> panelesPorRol = new LinkedHashMap<>();
-        for (FuncionUsuario f : funciones) {
-            JPanel panelRol = panelesPorRol.computeIfAbsent(f.rol(), this::crearPanelRol);
-            panelRol.add(crearBoton(f));
+        for (int idIu : ius) {
+
+            JButton boton = crearBoton(idIu);
+
+            contenedor.add(boton);
         }
-        panelesPorRol.values().forEach(contenedor::add);
+
         return contenedor;
     }
 
-    private JPanel crearPanelRol(String rol) {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createTitledBorder("Como " + rol));
-        return panel;
-    }
+    private JButton crearBoton(int idIu) {
 
-    private JButton crearBoton(FuncionUsuario f) {
-        JButton boton = new JButton(f.funcion());
-        boton.setAlignmentX(Component.LEFT_ALIGNMENT);
-        boton.setToolTipText("Abre: " + f.interfaz());
-        boton.addActionListener(e -> abrirFuncion(f));
+        String nombre = obtenerNombreIU(idIu);
+
+        JButton boton = new JButton(nombre);
+
+        boton.setAlignmentX(JButton.LEFT_ALIGNMENT);
+
+        boton.addActionListener(e -> abrirFuncion(idIu));
+
         return boton;
     }
 
+    private String obtenerNombreIU(int idIu) {
+
+        return switch (idIu) {
+
+            case 1 -> "Inicio de sesión";
+            case 2 -> "Registro de equipo";
+            case 3 -> "Gestión de partidos";
+            case 4 -> "Programación de partidos";
+            case 5 -> "Resultados";
+            case 6 -> "Impresión de resultados";
+
+            default -> "IU " + idIu;
+        };
+    }
+
+    private void abrirFuncion(int idIu) {
+
+        JOptionPane.showMessageDialog(
+            this,
+            "Se seleccionó la interfaz con ID: " + idIu
+        );
+    }
+
     private JPanel crearPie() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+        JPanel panel = new JPanel(
+            new FlowLayout(FlowLayout.RIGHT)
+        );
+
         JButton btnSalir = new JButton("Cerrar sesión");
+
         btnSalir.addActionListener(e -> cerrarSesion());
+
         panel.add(btnSalir);
+
         return panel;
     }
 
-    /** Punto de extensión: aquí se abrirá la pantalla real de cada función. */
-    private void abrirFuncion(FuncionUsuario f) {
-        JOptionPane.showMessageDialog(this,
-            "Función: " + f.funcion() + "\nPantalla: " + f.interfaz() + "\n(Rol: " + f.rol() + ")");
-    }
-
     private void cerrarSesion() {
+
         servicio.cerrar(sesion);
+
         dispose();
+
         new VentanaLogin().setVisible(true);
     }
 }
