@@ -2,6 +2,7 @@ package backend.servicio;
 
 import backend.dao.PermisoDAO;
 import backend.dao.RolFuncionDAO;
+import backend.modelo.FuncionUsuario;
 import backend.modelo.RolFuncion;
 
 import java.util.ArrayList;
@@ -34,5 +35,19 @@ public class ServicioPermisos {
         }
 
         return agrupadas;
+    }
+
+    public Map<String, Map<String, List<FuncionUsuario>>> funcionesDeUsuario(int idUser) {
+
+      Map<String, Map<String, List<FuncionUsuario>>> resultado = new LinkedHashMap<>();
+
+      for (FuncionUsuario f : permisoDAO.listarFunciones(idUser)) {
+        resultado
+            .computeIfAbsent(f.rol(), r -> new LinkedHashMap<>())
+            .computeIfAbsent(f.categoria(), c -> new ArrayList<>())
+            .add(f);
+      }
+
+      return resultado;
     }
 }

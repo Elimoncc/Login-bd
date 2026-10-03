@@ -17,16 +17,19 @@ public class ServicioLogin {
         if (usuario == null) {
             throw new IllegalStateException("Usuario o contraseña incorrectos.");
         }
+
         if (!usuario.isActivo()) {
             throw new IllegalStateException("El usuario está inactivo.");
         }
 
-        Connection conexion = Conexion.conectar();
+        Connection conexion = Conexion.conectar(usuario.getNombre());
+
         if (conexion == null) {
             throw new IllegalStateException("No se pudo conectar a la base de datos.");
         }
 
         int pid = Conexion.obtenerPid(conexion);
+
         if (pid == -1 || !sesionDAO.crearSesion(usuario.getIdUser(), pid)) {
             cerrarSilenciosamente(conexion);
             throw new IllegalStateException(
@@ -34,8 +37,15 @@ public class ServicioLogin {
         }
 
         GestorSesiones.SesionInfo sesion =
-            new GestorSesiones.SesionInfo(conexion, usuario.getIdUser(), usuario.getNombre(), pid);
+            new GestorSesiones.SesionInfo(
+                conexion,
+                usuario.getIdUser(),
+                usuario.getNombre(),
+                pid
+            );
+
         GestorSesiones.agregar(sesion);
+
         return sesion;
     }
 
@@ -45,6 +55,9 @@ public class ServicioLogin {
     }
 
     private void cerrarSilenciosamente(Connection conexion) {
-        try { conexion.close(); } catch (Exception ignorada) { }
+        try {
+            conexion.close();
+        } catch (Exception ignorada) {
+        }
     }
 }
