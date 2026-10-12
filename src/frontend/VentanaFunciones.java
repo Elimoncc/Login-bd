@@ -44,7 +44,6 @@ public class VentanaFunciones extends JDialog {
         }
 
         JTree arbol = new JTree(raiz);
-        // getRowCount() crece a medida que se expanden nodos, por eso se reevalúa en cada vuelta
         for (int i = 0; i < arbol.getRowCount(); i++) {
             arbol.expandRow(i);
         }

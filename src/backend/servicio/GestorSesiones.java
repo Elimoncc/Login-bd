@@ -2,6 +2,7 @@ package backend.servicio;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GestorSesiones {
@@ -20,26 +21,35 @@ public class GestorSesiones {
         }
     }
 
-    private static final List<SesionInfo> sesionesActivas = new ArrayList<>();
+    private static final List<SesionInfo> sesionesActivas =
+        Collections.synchronizedList(new ArrayList<>());
 
     public static void agregar(SesionInfo sesion) {
         sesionesActivas.add(sesion);
     }
 
     public static List<SesionInfo> listar() {
-        return sesionesActivas;
+        return Collections.unmodifiableList(new ArrayList<>(sesionesActivas));
+    }
+
+    public static int cantidadSesiones() {
+        return sesionesActivas.size();
     }
 
     public static SesionInfo buscarPorPid(int pid) {
-        for (SesionInfo s : sesionesActivas) {
-            if (s.pid == pid) return s;
+        synchronized (sesionesActivas) {
+            for (SesionInfo s : sesionesActivas) {
+                if (s.pid == pid) {
+                    return s;
+                }
+            }
         }
         return null;
     }
 
     public static void cerrar(SesionInfo sesion) {
         try {
-            if (sesion.conexion != null) {
+            if (sesion.conexion != null && !sesion.conexion.isClosed()) {
                 sesion.conexion.close();
             }
         } catch (Exception e) {

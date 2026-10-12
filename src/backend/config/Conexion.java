@@ -19,7 +19,6 @@ public class Conexion {
             try (Statement st = conexion.createStatement()) {
                 st.execute("SET search_path TO " + ESQUEMA);
             }
-
             return conexion;
 
         } catch (Exception e) {
@@ -38,11 +37,9 @@ public class Conexion {
 
             try (PreparedStatement ps = conexion.prepareStatement(
                     "SELECT set_config('app.user_name', ?, false)")) {
-
                 ps.setString(1, userNombre);
                 ps.execute();
             }
-
             return conexion;
 
         } catch (Exception e) {
@@ -66,3 +63,5 @@ public class Conexion {
         return -1;
     }
 }
+
+

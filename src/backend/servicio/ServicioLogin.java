@@ -1,5 +1,4 @@
 package backend.servicio;
-
 import backend.config.Conexion;
 import backend.dao.SesionDAO;
 import backend.dao.UsuarioDAO;
@@ -11,7 +10,6 @@ public class ServicioLogin {
     private final UsuarioDAO usuarioDAO = new UsuarioDAO();
     private final SesionDAO sesionDAO = new SesionDAO();
 
-    /** Autentica y registra la sesión. Lanza IllegalStateException con el motivo si falla. */
     public GestorSesiones.SesionInfo iniciar(String nombre, String password) {
         Usuario usuario = usuarioDAO.buscarUsuario(nombre, password);
         if (usuario == null) {
@@ -21,7 +19,7 @@ public class ServicioLogin {
         if (!usuario.isActivo()) {
             throw new IllegalStateException("El usuario está inactivo.");
         }
-
+         //conexion para el userN de la app, postgres asigna pid
         Connection conexion = Conexion.conectar(usuario.getNombre());
 
         if (conexion == null) {

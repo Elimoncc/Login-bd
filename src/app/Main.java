@@ -1,6 +1,6 @@
 /*
-Compilar: javac -cp "lib/postgresql-42.7.12.jar" -d out $(find src -name "*.java")
-Ejecutar: java -cp "lib/postgresql-42.7.12.jar:out" app.Main
+javac -cp "lib/postgresql-42.7.12.jar" -d out $(find src -name "*.java")
+java -cp "lib/postgresql-42.7.12.jar:out" app.Main
 */
 
 package app;
@@ -14,3 +14,4 @@ public class Main {
         SwingUtilities.invokeLater(() -> new VentanaLogin().setVisible(true));
     }
 }
+

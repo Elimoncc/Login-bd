@@ -11,8 +11,6 @@ public class ServicioGestion {
     private final GestionDAO gestionDAO = new GestionDAO();
     private final ConsultaDAO consultaDAO = new ConsultaDAO();
 
-    // ---------- Consultas ----------
-
     public Tabla deportes(Connection c) {
         return consultaDAO.consultar(c, "SELECT deporte_id, nombre FROM listar_deportes()");
     }
@@ -36,19 +34,23 @@ public class ServicioGestion {
             "SELECT equipo_id, nombre FROM listar_equipos() WHERE deporte_id = ?", deporteId);
     }
 
-    private static final String COLUMNAS_PARTIDO =
-        "partido_id, torneo, tipo, cantidad_vs, local_nombre, visitante_nombre, fecha, hora, arbitro";
+    // ===== PARTIDOS DEL ÁRBITRO (EQUIPO + 1VS1 combinados) =====
+    private static final String COLUMNAS_PARTIDOS_ARBITRO =
+        "partido_id, torneo_nombre, tipo_partido, cantidad_vs, local_nombre, visitante_nombre, fecha, hora, arbitro_nombre";
 
     public Tabla partidosArbitro(Connection c, int idUser) {
         return consultaDAO.consultar(c,
-            "SELECT " + COLUMNAS_PARTIDO + " FROM partidos_arbitro(?)", idUser);
+            "SELECT " + COLUMNAS_PARTIDOS_ARBITRO + " FROM partidos_arbitro_todos(?)", idUser);
     }
+
+    // Columnas de la función partidos_jugador_1vs1
+    private static final String COLUMNAS_PARTIDOS_JUGADOR =
+    "partido_id, torneo_nombre, tipo_partido, cantidad_vs, jugador_local, jugador_visitante, fecha, hora, arbitro_nombre";
 
     public Tabla partidosJugador(Connection c, int idUser) {
-        return consultaDAO.consultar(c,
-            "SELECT " + COLUMNAS_PARTIDO + " FROM partidos_jugador(?)", idUser);
+      return consultaDAO.consultar(c,
+        "SELECT " + COLUMNAS_PARTIDOS_JUGADOR + " FROM partidos_jugador_1vs1(?)", idUser);
     }
-
     // ---------- Operaciones (con validación) ----------
 
     public void crearTorneo(Connection c, int deporteId, String nombre,

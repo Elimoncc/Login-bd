@@ -1,10 +1,9 @@
 package backend.dao;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
+import java.time.LocalDate; //? reservar espacio
 
 public class GestionDAO {
 
@@ -18,13 +17,24 @@ public class GestionDAO {
         return llamar(c, "SELECT registrar_jugador(?, ?, ?)", nombre, email, contacto);
     }
 
+    public boolean registrarEquipo(
+      Connection c,
+      String nombre,
+      int deporteId
+     ) {
+     return llamar(
+        c,
+        "SELECT registrar_equipo(?, ?)",
+        nombre,
+        deporteId
+     );
+    }
     public boolean crearPartido(Connection c, int deporteId, LocalDate inicio, String tipo,
                                 String cantidadVs, int local, int visitante) {
         return llamar(c, "SELECT crear_partido(?, ?::date, ?, ?, ?, ?)",
                       deporteId, inicio, tipo, cantidadVs, local, visitante);
     }
 
-    /** Ejecuta una función booleana. Si la BD lanza un error, sube el mensaje a la interfaz. */
     private boolean llamar(Connection c, String sql, Object... params) {
         try (PreparedStatement ps = c.prepareStatement(sql)) {
 

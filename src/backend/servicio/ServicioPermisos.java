@@ -3,8 +3,8 @@ package backend.servicio;
 import backend.dao.PermisoDAO;
 import backend.dao.RolFuncionDAO;
 import backend.modelo.FuncionUsuario;
+import backend.modelo.IU;
 import backend.modelo.RolFuncion;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,35 +19,19 @@ public class ServicioPermisos {
         return permisoDAO.listarIU(idUser);
     }
 
-    public Map<String, List<RolFuncion>> funcionesPorRol() {
+    public List<IU> interfacesDeUsuario(int idUser) {
+        return permisoDAO.listarInterfaces(idUser);
+    }
 
-        Map<String, List<RolFuncion>> agrupadas =
-            new LinkedHashMap<>();
-
+    public Map<String, List<RolFuncion>> funcionesPorRol() {//si
+        Map<String, List<RolFuncion>> agrupadas = new LinkedHashMap<>();
         for (RolFuncion rf : rolFuncionDAO.listarTodas()) {
-
             agrupadas
-                .computeIfAbsent(
-                    rf.rol(),
-                    r -> new ArrayList<>()
-                )
+                .computeIfAbsent(rf.rol(), r -> new ArrayList<>())
                 .add(rf);
         }
-
         return agrupadas;
     }
 
-    public Map<String, Map<String, List<FuncionUsuario>>> funcionesDeUsuario(int idUser) {
 
-      Map<String, Map<String, List<FuncionUsuario>>> resultado = new LinkedHashMap<>();
-
-      for (FuncionUsuario f : permisoDAO.listarFunciones(idUser)) {
-        resultado
-            .computeIfAbsent(f.rol(), r -> new LinkedHashMap<>())
-            .computeIfAbsent(f.categoria(), c -> new ArrayList<>())
-            .add(f);
-      }
-
-      return resultado;
-    }
 }

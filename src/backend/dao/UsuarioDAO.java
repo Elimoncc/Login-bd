@@ -39,6 +39,6 @@ public class UsuarioDAO {
         throw new IllegalStateException("Error consultando usuarios: " + e.getMessage());
     }
 
-    return null; // aquí sí: usuario o contraseña incorrectos
+    return null;
 }
 }
