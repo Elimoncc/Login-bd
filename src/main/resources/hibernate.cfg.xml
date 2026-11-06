@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+  "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+  "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+  <session-factory>
+    <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+    <property name="hibernate.connection.url">jdbc:postgresql://localhost:5433/postgres</property>
+    <property name="hibernate.connection.username">postgres</property>
+    <property name="hibernate.connection.password">0620&amp;po</property>
+    <property name="hibernate.default_schema">"TBD deporte"</property>
+    <property name="hibernate.hbm2ddl.auto">validate</property>
+    <property name="hibernate.show_sql">true</property>
+
+
+    <mapping class="backend.entidad.Persona"/>
+<mapping class="backend.entidad.Jugador"/>
+<mapping class="backend.entidad.Arbitro"/>
+<mapping class="backend.entidad.UserN"/>
+<mapping class="backend.entidad.Rol"/>
+<mapping class="backend.entidad.Funcion"/>
+<mapping class="backend.entidad.IU"/>
+<mapping class="backend.entidad.Sesion"/>
+  </session-factory>
+</hibernate-configuration>
