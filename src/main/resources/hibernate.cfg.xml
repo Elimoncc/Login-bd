@@ -21,5 +21,20 @@
 <mapping class="backend.entidad.Funcion"/>
 <mapping class="backend.entidad.IU"/>
 <mapping class="backend.entidad.Sesion"/>
+      <mapping class="backend.entidad.Deporte"/>
+    <mapping class="backend.entidad.Lugar"/>
+    <mapping class="backend.entidad.Equipo"/>
+    <mapping class="backend.entidad.Log"/>
+      <mapping class="backend.entidad.RolFuncion"/>
+    <mapping class="backend.entidad.FuncionIU"/>
+    <mapping class="backend.entidad.UserNRol"/>
+      <mapping class="backend.entidad.Torneo"/>
+    <mapping class="backend.entidad.Partido"/>
+    <mapping class="backend.entidad.Partido1vs1"/>
+    <mapping class="backend.entidad.PartidoEquipoVsEquipo"/>
+      <mapping class="backend.entidad.JugadorEquipo"/>
+    <mapping class="backend.entidad.Programacion"/>
+    <mapping class="backend.entidad.ResultadoPartido"/>
+    <mapping class="backend.entidad.PuntajeResultado"/>
   </session-factory>
 </hibernate-configuration>
