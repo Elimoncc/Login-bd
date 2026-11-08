@@ -26,7 +26,6 @@ public class VentanaRegistrarJugador extends Formulario {
 
     private void guardar() {
         servicio.registrarJugador(
-            sesion.conexion,
             txtNombre.getText(),
             txtEmail.getText(),
             txtContacto.getText());

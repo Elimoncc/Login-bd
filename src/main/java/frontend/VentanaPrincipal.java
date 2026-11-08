@@ -68,7 +68,7 @@ public class VentanaPrincipal extends JFrame {
                 .orElse("");
         panel.add(new JLabel(
             "Bienvenido/a, " + sesion.nombreUsuario +
-            "  (PID " + sesion.pid + ")  —  IU autorizadas: " + ids));
+            "  (Sesión " + sesion.idSesion + ")  —  IU autorizadas: " + ids));
         return panel;
     }
 
@@ -121,17 +121,17 @@ public class VentanaPrincipal extends JFrame {
 
                 case "Consultar equipos" ->
                     new VentanaTabla(this, "Equipos",
-                        gestion.equipos(sesion.conexion)).setVisible(true);
+                        gestion.equipos()).setVisible(true);
                 case "Consultar partidos asignados" ->
                     new VentanaTabla(this, "Partidos asignados",
-                        gestion.partidosArbitro(sesion.conexion, sesion.idUser)).setVisible(true);
+                        gestion.partidosArbitro(sesion.idUser)).setVisible(true);
 
                 case "Consultar torneos" ->
                     new VentanaTabla(this, "Torneos",
-                        gestion.torneos(sesion.conexion)).setVisible(true);
+                        gestion.torneos()).setVisible(true);
                 case "Consultar sus partidos" ->
                     new VentanaTabla(this, "Mis partidos",
-                        gestion.partidosJugador(sesion.conexion, sesion.idUser)).setVisible(true);
+                        gestion.partidosJugador(sesion.idUser)).setVisible(true);
 
                 default -> JOptionPane.showMessageDialog(this,
                     "IU id=" + iu.idIu() + " — \"" + iu.nombre() + "\"\n"

@@ -24,7 +24,7 @@ public class VentanaCrearPartido extends Formulario {
         this.sesion = sesion;
 
         // fila: deporte_id, deporte, nombre, fecha_inicio, fecha_fin
-        for (Opcion o : Opcion.de(servicio.torneos(sesion.conexion),
+        for (Opcion o : Opcion.de(servicio.torneos(),
                 f -> f[2] + " (" + f[1] + ") " + f[3])) {
             cmbTorneo.addItem(o);
         }
@@ -53,11 +53,11 @@ public class VentanaCrearPartido extends Formulario {
 
         Tabla tabla;
         if (tipo.equals("1VS1")) {
-            tabla = servicio.jugadores(sesion.conexion);
+            tabla = servicio.jugadores();
             txtCantidad.setText("1VS1");
             txtCantidad.setEnabled(false);
         } else {
-            tabla = servicio.equiposDeDeporte(sesion.conexion, torneo.id());
+            tabla = servicio.equiposDeDeporte(torneo.id());
             if (!txtCantidad.isEnabled()) txtCantidad.setText("");
             txtCantidad.setEnabled(true);
         }
@@ -80,10 +80,9 @@ public class VentanaCrearPartido extends Formulario {
         if (local == null || visitante == null)
             throw new IllegalStateException("No hay suficientes participantes para este tipo.");
 
-        LocalDate inicio = ((java.sql.Date) torneo.fila()[3]).toLocalDate();
+        LocalDate inicio = (LocalDate) torneo.fila()[3];
 
         servicio.crearPartido(
-            sesion.conexion,
             torneo.id(),                       // deporte_id del torneo
             inicio,
             (String) cmbTipo.getSelectedItem(),

@@ -20,7 +20,7 @@ public class VentanaCrearTorneo extends Formulario {
         super(padre, "Crear torneo");
         this.sesion = sesion;
 
-        for (Opcion o : Opcion.de(servicio.deportes(sesion.conexion), f -> (String) f[1])) {
+        for (Opcion o : Opcion.de(servicio.deportes(), f -> (String) f[1])) {
             cmbDeporte.addItem(o);
         }
 
@@ -38,7 +38,6 @@ public class VentanaCrearTorneo extends Formulario {
         }
 
         servicio.crearTorneo(
-            sesion.conexion,
             deporte.id(),
             txtNombre.getText(),
             fecha(txtInicio.getText(), false),

@@ -1,6 +1,5 @@
 package backend.servicio;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -8,16 +7,14 @@ import java.util.List;
 public class GestorSesiones {
 
     public static class SesionInfo {
-        public final Connection conexion;
+        public final int idSesion;
         public final int idUser;
         public final String nombreUsuario;
-        public final int pid;
 
-        public SesionInfo(Connection conexion, int idUser, String nombreUsuario, int pid) {
-            this.conexion = conexion;
+        public SesionInfo(int idSesion, int idUser, String nombreUsuario) {
+            this.idSesion = idSesion;
             this.idUser = idUser;
             this.nombreUsuario = nombreUsuario;
-            this.pid = pid;
         }
     }
 
@@ -36,10 +33,10 @@ public class GestorSesiones {
         return sesionesActivas.size();
     }
 
-    public static SesionInfo buscarPorPid(int pid) {
+    public static SesionInfo buscarPorId(int idSesion) {
         synchronized (sesionesActivas) {
             for (SesionInfo s : sesionesActivas) {
-                if (s.pid == pid) {
+                if (s.idSesion == idSesion) {
                     return s;
                 }
             }
@@ -48,15 +45,6 @@ public class GestorSesiones {
     }
 
     public static void cerrar(SesionInfo sesion) {
-        try {
-            if (sesion.conexion != null && !sesion.conexion.isClosed()) {
-                sesion.conexion.close();
-            }
-        } catch (Exception e) {
-            System.out.println("Error cerrando conexión:");
-            System.out.println(e.getMessage());
-        } finally {
-            sesionesActivas.remove(sesion);
-        }
+        sesionesActivas.remove(sesion);
     }
 }

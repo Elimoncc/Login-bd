@@ -1,9 +1,8 @@
 package backend.servicio;
-import backend.config.Conexion;
+
 import backend.dao.SesionDAO;
 import backend.dao.UsuarioDAO;
 import backend.modelo.Usuario;
-import java.sql.Connection;
 
 public class ServicioLogin {
 
@@ -15,47 +14,24 @@ public class ServicioLogin {
         if (usuario == null) {
             throw new IllegalStateException("Usuario o contraseña incorrectos.");
         }
-
         if (!usuario.isActivo()) {
             throw new IllegalStateException("El usuario está inactivo.");
         }
-         //conexion para el userN de la app, postgres asigna pid
-        Connection conexion = Conexion.conectar(usuario.getNombre());
 
-        if (conexion == null) {
-            throw new IllegalStateException("No se pudo conectar a la base de datos.");
-        }
-
-        int pid = Conexion.obtenerPid(conexion);
-
-        if (pid == -1 || !sesionDAO.crearSesion(usuario.getIdUser(), pid)) {
-            cerrarSilenciosamente(conexion);
+        Integer idSesion = sesionDAO.crearSesion(usuario.getIdUser());
+        if (idSesion == null) {
             throw new IllegalStateException(
                 "No se pudo crear la sesión (¿el usuario ya tiene una sesión activa?).");
         }
 
         GestorSesiones.SesionInfo sesion =
-            new GestorSesiones.SesionInfo(
-                conexion,
-                usuario.getIdUser(),
-                usuario.getNombre(),
-                pid
-            );
-
+            new GestorSesiones.SesionInfo(idSesion, usuario.getIdUser(), usuario.getNombre());
         GestorSesiones.agregar(sesion);
-
         return sesion;
     }
 
     public void cerrar(GestorSesiones.SesionInfo sesion) {
-        sesionDAO.cerrarSesion(sesion.pid);
+        sesionDAO.cerrarSesion(sesion.idSesion);
         GestorSesiones.cerrar(sesion);
-    }
-
-    private void cerrarSilenciosamente(Connection conexion) {
-        try {
-            conexion.close();
-        } catch (Exception ignorada) {
-        }
     }
 }

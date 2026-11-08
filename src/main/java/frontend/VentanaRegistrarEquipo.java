@@ -20,7 +20,7 @@ public class VentanaRegistrarEquipo extends Formulario {
         this.sesion = sesion;
 
         ServicioGestion gestion = new ServicioGestion();
-        for (Opcion o : Opcion.de(gestion.deportes(sesion.conexion), f -> (String) f[1])) {
+        for (Opcion o : Opcion.de(gestion.deportes(), f -> (String) f[1])) {
             cmbDeporte.addItem(o);
         }
 
@@ -35,7 +35,7 @@ public class VentanaRegistrarEquipo extends Formulario {
             throw new IllegalStateException("No hay deportes registrados.");
         }
 
-        boolean ok = servicioEquipos.registrar(sesion.conexion, txtNombre.getText(), deporte.id());
+        boolean ok = servicioEquipos.registrar(txtNombre.getText(), deporte.id());
         if (!ok) {
             throw new IllegalStateException("No se pudo registrar el equipo (revisa el nombre).");
         }

@@ -1,70 +1,120 @@
 package backend.dao;
 
-import backend.config.SesionOrm;
+import backend.config.Errores;
+import backend.config.HibernateUtil;
+import backend.entidad.*;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import java.sql.Connection;
 import java.time.LocalDate;
-import java.util.function.Function;
+import java.util.List;
 
 public class GestionDAO {
 
-    public boolean crearTorneo(Connection c, int deporteId, String nombre,
+    public boolean crearTorneo(int deporteId, String nombre,
                                LocalDate inicio, LocalDate fin) {
-        return ejecutar(c, s -> s.createNativeQuery(
-                    "SELECT crear_torneo(?1, ?2, CAST(?3 AS date), CAST(?4 AS date))", Boolean.class)
-                .setParameter(1, deporteId)
-                .setParameter(2, nombre)
-                .setParameter(3, inicio, LocalDate.class)
-                .setParameter(4, fin, LocalDate.class)   // puede ser null
-                .getSingleResult());
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction tx = session.beginTransaction();
+        try {
+            Torneo t = new Torneo(session.getReference(Deporte.class, deporteId), inicio, nombre);
+            t.setFechaFin(fin);
+            session.persist(t);
+            tx.commit();
+            return true;
+        } catch (RuntimeException e) {
+            if (tx.isActive()) tx.rollback();
+            throw new IllegalStateException(Errores.raiz(e));
+        } finally {
+            session.close();
+        }
     }
 
-    public boolean registrarJugador(Connection c, String nombre, String email, String contacto) {
-        return ejecutar(c, s -> s.createNativeQuery(
-                    "SELECT registrar_jugador(?1, ?2, ?3)", Boolean.class)
-                .setParameter(1, nombre)
-                .setParameter(2, email, String.class)     // pueden ser null
-                .setParameter(3, contacto, String.class)
-                .getSingleResult());
+    public boolean registrarJugador(String nombre, String email, String contacto) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction tx = session.beginTransaction();
+        try {
+            Jugador j = new Jugador();
+            j.setNombre(nombre);
+            j.setEmail(email);
+            j.setContacto(contacto);
+            j.setPartidosJugados(0);
+            session.persist(j);       // inserta persona y jugador
+            tx.commit();
+            return true;
+        } catch (RuntimeException e) {
+            if (tx.isActive()) tx.rollback();
+            throw new IllegalStateException(Errores.raiz(e));
+        } finally {
+            session.close();
+        }
     }
 
-    public boolean registrarEquipo(Connection c, String nombre, int deporteId) {
-        return ejecutar(c, s -> s.createNativeQuery(
-                    "SELECT registrar_equipo(?1, ?2)", Boolean.class)
-                .setParameter(1, nombre)
-                .setParameter(2, deporteId)
-                .getSingleResult());
+    public boolean registrarEquipo(String nombre, int deporteId) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction tx = session.beginTransaction();
+        try {
+            Equipo e = new Equipo();
+            e.setNombre(nombre);
+            e.setDeporte(session.getReference(Deporte.class, deporteId));
+            session.persist(e);
+            tx.commit();
+            return true;
+        } catch (RuntimeException ex) {
+            if (tx.isActive()) tx.rollback();
+            throw new IllegalStateException(Errores.raiz(ex));
+        } finally {
+            session.close();
+        }
     }
 
-    public boolean crearPartido(Connection c, int deporteId, LocalDate inicio, String tipo,
+    public boolean crearPartido(int deporteId, LocalDate inicio, String tipo,
                                 String cantidadVs, int local, int visitante) {
-        return ejecutar(c, s -> s.createNativeQuery(
-                    "SELECT crear_partido(?1, CAST(?2 AS date), ?3, ?4, ?5, ?6)", Boolean.class)
-                .setParameter(1, deporteId)
-                .setParameter(2, inicio, LocalDate.class)
-                .setParameter(3, tipo)
-                .setParameter(4, cantidadVs)
-                .setParameter(5, local)
-                .setParameter(6, visitante)
-                .getSingleResult());
-    }
-
-    /** Ejecuta la función de la BD dentro de una transacción y devuelve su resultado booleano. */
-    private boolean ejecutar(Connection c, Function<Session, Boolean> accion) {
-        try (Session s = SesionOrm.abrir(c)) {
-            Transaction tx = s.beginTransaction();
-            try {
-                Boolean resultado = accion.apply(s);
-                tx.commit();
-                return Boolean.TRUE.equals(resultado);
-            } catch (RuntimeException e) {
-                if (tx.isActive()) tx.rollback();
-                throw e;
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction tx = session.beginTransaction();
+        try {
+            if (local == visitante) {
+                throw new IllegalStateException("El local y el visitante no pueden ser iguales");
             }
-        } catch (Exception e) {
-            throw new IllegalStateException(SesionOrm.mensaje(e));
+
+            if ("EQUIPO".equals(tipo)) {
+                Long n = session.createSelectionQuery(
+                            "select count(e) from Equipo e " +
+                            "where e.id in (:ids) and e.deporte.id = :dep", Long.class)
+                        .setParameterList("ids", List.of(local, visitante))
+                        .setParameter("dep", deporteId)
+                        .uniqueResult();
+                if (n == null || n != 2L) {
+                    throw new IllegalStateException("Ambos equipos deben ser del deporte del torneo");
+                }
+            }
+
+            Partido p = new Partido();
+            p.setTorneo(session.getReference(Torneo.class, new TorneoId(deporteId, inicio)));
+            p.setTipoPartido(tipo);
+            p.setCantidadVs(cantidadVs);
+            session.persist(p);
+
+            if ("1VS1".equals(tipo)) {
+                Partido1vs1 x = new Partido1vs1();
+                x.setPartido(p);
+                x.setJugadorLocal(session.getReference(Jugador.class, local));
+                x.setJugadorVisitante(session.getReference(Jugador.class, visitante));
+                session.persist(x);
+            } else {
+                PartidoEquipoVsEquipo x = new PartidoEquipoVsEquipo();
+                x.setPartido(p);
+                x.setEquipoLocal(session.getReference(Equipo.class, local));
+                x.setEquipoVisitante(session.getReference(Equipo.class, visitante));
+                session.persist(x);
+            }
+
+            tx.commit();
+            return true;
+        } catch (RuntimeException e) {
+            if (tx.isActive()) tx.rollback();
+            throw new IllegalStateException(Errores.raiz(e));
+        } finally {
+            session.close();
         }
     }
 }
