@@ -1,14 +1,14 @@
 package backend.servicio;
 
-import backend.dao.ConsultaDAO;
-import backend.dao.GestionDAO;
-import backend.modelo.Tabla;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
+import backend.dao.ConsultaDAO;
+import backend.dao.GestionDAO;
+import backend.modelo.Tabla;
 
 public class ServicioGestion {
 
@@ -49,20 +49,25 @@ public class ServicioGestion {
         "local_nombre", "visitante_nombre", "fecha", "hora", "arbitro_nombre");
 
     private static final String PARTIDOS_ARBITRO_EQUIPO =
-        "select p.id, t.nombre, p.tipoPartido, p.cantidadVs, el.nombre, ev.nombre, " +
-        "       pr.fecha, pr.hora, pr.arbitro.nombre " +
+        "select p.id, t.nombre, p.tipoPartido, p.cantidadVs, " +
+        "       el.nombre, ev.nombre, pr.fecha, pr.hora, pr.arbitro.nombre " +
         "from Programacion pr join pr.partido p join p.torneo t, " +
-        "     PartidoEquipoVsEquipo pe join pe.equipoLocal el join pe.equipoVisitante ev, " +
+        "     PartidoEquipoVsEquipo pe join pe.equipoLocal el " +
+        "     join pe.equipoVisitante ev, " +
         "     UserN u " +
-        "where pe.partido = p and u.id = ?1 and pr.arbitro.id = u.persona.id";
+        "where pe.partido = p " + 
+        "and u.id = ?1 " +
+        "and pr.arbitro.id = u.persona.id";
 
     private static final String PARTIDOS_ARBITRO_1VS1 =
-        "select p.id, t.nombre, p.tipoPartido, p.cantidadVs, jl.nombre, jv.nombre, " +
-        "       pr.fecha, pr.hora, pr.arbitro.nombre " +
+        "select p.id, t.nombre, p.tipoPartido, p.cantidadVs, " +
+        "       jl.nombre, jv.nombre, pr.fecha, pr.hora, pr.arbitro.nombre " +
         "from Programacion pr join pr.partido p join p.torneo t, " +
         "     Partido1vs1 x join x.jugadorLocal jl join x.jugadorVisitante jv, " +
         "     UserN u " +
-        "where x.partido = p and u.id = ?1 and pr.arbitro.id = u.persona.id";
+        "where x.partido = p " +
+        "and u.id = ?1 " +
+        "and pr.arbitro.id = u.persona.id";
 
     public Tabla partidosArbitro(int idUser) {
         List<Object[]> filas = new ArrayList<>();
