@@ -12,7 +12,7 @@ public class ConsultaDAO {
 
     /** Ejecuta una consulta HQL de varias columnas. Parámetros posicionales: ?1, ?2... */
     public Tabla consultar(List<String> columnas, String hql, Object... params) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+        try (Session session = HibernateUtil.abrirSesion()) {
             SelectionQuery<Object[]> q = session.createSelectionQuery(hql, Object[].class);
             for (int i = 0; i < params.length; i++) {
                 q.setParameter(i + 1, params[i]);

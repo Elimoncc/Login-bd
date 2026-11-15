@@ -1,11 +1,13 @@
 package frontend;
 
+import java.awt.Frame;
+
+import javax.swing.JComboBox;
+import javax.swing.JTextField;
+
 import backend.servicio.GestorSesiones;
 import backend.servicio.ServicioEquipos;
 import backend.servicio.ServicioGestion;
-import java.awt.Frame;
-import javax.swing.JComboBox;
-import javax.swing.JTextField;
 
 public class VentanaRegistrarEquipo extends Formulario {
 

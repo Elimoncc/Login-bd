@@ -8,7 +8,7 @@ import org.hibernate.Session;
 public class UsuarioDAO {
 
     public Usuario buscarUsuario(String nombre, String password) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+        try (Session session = HibernateUtil.abrirSesion()) {
 
             UserN u = session.createSelectionQuery(
                         "from UserN where nombre = :nombre and password = :password", UserN.class)

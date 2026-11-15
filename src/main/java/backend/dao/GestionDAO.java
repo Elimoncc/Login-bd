@@ -13,7 +13,7 @@ public class GestionDAO {
 
     public boolean crearTorneo(int deporteId, String nombre,
                                LocalDate inicio, LocalDate fin) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = HibernateUtil.abrirSesion();
         Transaction tx = session.beginTransaction();
         try {
             Torneo t = new Torneo(session.getReference(Deporte.class, deporteId), inicio, nombre);
@@ -30,7 +30,7 @@ public class GestionDAO {
     }
 
     public boolean registrarJugador(String nombre, String email, String contacto) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = HibernateUtil.abrirSesion();
         Transaction tx = session.beginTransaction();
         try {
             Jugador j = new Jugador();
@@ -50,7 +50,7 @@ public class GestionDAO {
     }
 
     public boolean registrarEquipo(String nombre, int deporteId) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = HibernateUtil.abrirSesion();
         Transaction tx = session.beginTransaction();
         try {
             Equipo e = new Equipo();
@@ -69,7 +69,7 @@ public class GestionDAO {
 
     public boolean crearPartido(int deporteId, LocalDate inicio, String tipo,
                                 String cantidadVs, int local, int visitante) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
+        Session session = HibernateUtil.abrirSesion();
         Transaction tx = session.beginTransaction();
         try {
             if (local == visitante) {

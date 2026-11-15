@@ -11,7 +11,7 @@ public class RolFuncionDAO {
 
     public List<RolFuncion> listarTodas() {
         List<RolFuncion> lista = new ArrayList<>();
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+        try (Session session = HibernateUtil.abrirSesion()) {
             List<Object[]> filas = session.createSelectionQuery(
                     "select r.nombre, f.nombre, f.descripcion " +
                     "from RolFuncion rf join rf.rol r join rf.funcion f " +

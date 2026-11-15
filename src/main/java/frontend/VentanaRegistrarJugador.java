@@ -1,9 +1,11 @@
 package frontend;
 
+import java.awt.Frame;
+
+import javax.swing.JTextField;
+
 import backend.servicio.GestorSesiones;
 import backend.servicio.ServicioGestion;
-import java.awt.Frame;
-import javax.swing.JTextField;
 
 public class VentanaRegistrarJugador extends Formulario {
 

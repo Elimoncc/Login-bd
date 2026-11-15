@@ -1,5 +1,7 @@
 package backend.dao;
 
+import java.sql.Connection;
+
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -12,45 +14,37 @@ public class SesionDAO {
     /**
      * Devuelve el id_sesion creado, o null si no se pudo crear.
      */
-    public Integer crearSesion(int idUser) {
+    public Integer crearSesion(int idUser, Connection conexion, int pid) {
         Transaction tx = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+        try (Session session = HibernateUtil.abrirSesion(conexion)) {
             tx = session.beginTransaction();
 
-            Sesion sesion = new Sesion();
+            // Libera sesiones huérfanas (app cerrada a la fuerza) cuyo PID ya no existe
+            session.createNativeMutationQuery(
+                    "UPDATE sesion SET activo = false WHERE activo "
+                    + "AND (pid IS NULL OR pid NOT IN (SELECT pid FROM pg_stat_activity))")
+                    .executeUpdate();
 
-            sesion.setUsuario(
-                    session.getReference(UserN.class, idUser)
-            );
-
-            sesion.setActivo(true);
-
-// Obtener el PID de PostgreSQL mediante Hibernate
-            Integer pid = ((Number) session
-                    .createNativeQuery("SELECT pg_backend_pid()")
-                    .getSingleResult())
-                    .intValue();
-
-// Asignar el PID a la entidad
-            sesion.setPid(pid);
-
-            session.persist(sesion);
+            Sesion s = new Sesion();
+            s.setUsuario(session.getReference(UserN.class, idUser));
+            s.setActivo(true);
+            s.setPid(pid);
+            session.persist(s);
 
             tx.commit();
-            return sesion.getId();
+            return s.getId();
         } catch (Exception e) {
             if (tx != null && tx.isActive()) {
                 tx.rollback();
             }
-            System.out.println("Error creando sesión:");
-            System.out.println(e.getMessage());
+            System.out.println("Error creando sesión: " + e.getMessage());
             return null;
         }
     }
 
     public boolean cerrarSesion(int idSesion) {
         Transaction tx = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+        try (Session session = HibernateUtil.abrirSesion()) {
             tx = session.beginTransaction();
 
             session.createMutationQuery(

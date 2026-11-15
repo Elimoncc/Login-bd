@@ -1,10 +1,5 @@
 package frontend;
 
-import backend.modelo.IU;
-import backend.servicio.GestorSesiones;
-import backend.servicio.ServicioLogin;
-import backend.servicio.ServicioPermisos;
-import backend.servicio.ServicioGestion;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -22,6 +17,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
+import backend.modelo.IU;
+import backend.servicio.GestorSesiones;
+import backend.servicio.ServicioGestion;
+import backend.servicio.ServicioLogin;
+import backend.servicio.ServicioPermisos;
 
 /**
  * Ventana principal de una sesión.
@@ -68,7 +69,7 @@ public class VentanaPrincipal extends JFrame {
                 .orElse("");
         panel.add(new JLabel(
             "Bienvenido/a, " + sesion.nombreUsuario +
-            "  (Sesión " + sesion.idSesion + ")  —  IU autorizadas: " + ids));
+            "  (PID: " + sesion.pid + ")  —  IU autorizadas: " + ids));
         return panel;
     }
 

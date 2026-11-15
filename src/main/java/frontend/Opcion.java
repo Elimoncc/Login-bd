@@ -1,9 +1,10 @@
 package frontend;
 
-import backend.modelo.Tabla;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+
+import backend.modelo.Tabla;
 
 public record Opcion(Object[] fila, String texto) {
 
