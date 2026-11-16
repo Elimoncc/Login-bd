@@ -11,7 +11,6 @@ public class Partido {
     @Column(name = "partido_id")
     private Integer id;
 
-    // FK compuesta hacia torneo(deporte_id, fecha_inicio)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumns({
         @JoinColumn(name = "torneo_deporte_id",

@@ -10,11 +10,11 @@ import java.time.LocalDate;
 @Table(name = "usern_rol")
 public class UserNRol {
 
-    @EmbeddedId
+    @EmbeddedId // incrustando una clave primaria compuesta
     private UserNRolId id = new UserNRolId();
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @MapsId("idUser")
+    @MapsId("idUser") //integrando  los ID de usuario
     @JoinColumn(name = "id_usern")
     private UserN usuario;
 
@@ -25,11 +25,10 @@ public class UserNRol {
 
     private LocalDate hasta;
 
-    private Boolean activo;   // si es null, la BD aplica su DEFAULT TRUE
+    private Boolean activo;
 
     public UserNRol() { }
 
-    /** 'desde' forma parte de la clave, así que debe asignarse desde Java. */
     public UserNRol(UserN usuario, Rol rol, LocalDate desde) {
         this.usuario = usuario;
         this.rol = rol;

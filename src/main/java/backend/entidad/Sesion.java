@@ -20,8 +20,8 @@ public class Sesion {
     @JoinColumn(name = "id_usern")
     private UserN usuario;
 
-    private LocalDate fecha;   // la llena la BD (DEFAULT)
-    private LocalTime hora;    // la llena la BD (DEFAULT)
+    private LocalDate fecha;  
+    private LocalTime hora;    
     private Boolean activo;
     private Integer pid;
 
