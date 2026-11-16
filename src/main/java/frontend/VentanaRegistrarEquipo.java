@@ -31,18 +31,23 @@ public class VentanaRegistrarEquipo extends Formulario {
         terminar(this::guardar);
     }
 
-    private void guardar() {
+        private void guardar() {
         Opcion deporte = (Opcion) cmbDeporte.getSelectedItem();
         if (deporte == null) {
             throw new IllegalStateException("No hay deportes registrados.");
         }
 
-        boolean ok = servicioEquipos.registrar(txtNombre.getText(), deporte.id());
-        if (!ok) {
-            throw new IllegalStateException("No se pudo registrar el equipo (revisa el nombre).");
-        }
-
-        informar("Equipo registrado correctamente.");
-        dispose();
+        servicioEquipos.registrar(
+            txtNombre.getText(),
+            deporte.id(),
+            // callback de éxito
+            () -> {
+                informar("Equipo registrado correctamente.");
+                dispose();
+            },
+            // callback de error
+            msg -> {
+                throw new IllegalStateException(msg);
+            });
     }
 }
