@@ -38,6 +38,7 @@ public class Conexion {
     }
         public static boolean fijarUsuario(Connection c, String nombreUsuario) {
         try (PreparedStatement ps = c.prepareStatement("SELECT set_config('app.user_name', ?, false)")) {
+            //establecer una variable de configuración personalizada para la conexión.
             ps.setString(1, nombreUsuario);
             ps.execute();
             return true;

@@ -11,20 +11,11 @@ import backend.entidad.UserN;
 
 public class SesionDAO {
 
-    /**
-     * Devuelve el id_sesion creado, o null si no se pudo crear.
-     */
+// Devuelve el id_sesion creado, o null si no se pudo crear
     public Integer crearSesion(int idUser, Connection conexion, int pid) {
         Transaction tx = null;
         try (Session session = HibernateUtil.abrirSesion(conexion)) {
             tx = session.beginTransaction();
-
-            // Libera sesiones huérfanas (app cerrada a la fuerza) cuyo PID ya no existe
-            session.createNativeMutationQuery(
-                    "UPDATE sesion SET activo = false WHERE activo "
-                    + "AND (pid IS NULL OR pid NOT IN (SELECT pid FROM pg_stat_activity))")
-                    .executeUpdate();
-
             Sesion s = new Sesion();
             s.setUsuario(session.getReference(UserN.class, idUser));
             s.setActivo(true);
@@ -33,6 +24,7 @@ public class SesionDAO {
 
             tx.commit();
             return s.getId();
+
         } catch (Exception e) {
             if (tx != null && tx.isActive()) {
                 tx.rollback();
